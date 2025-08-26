@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Index
 from sqlalchemy.orm import relationship
 from app.models.baseModel import BaseModel
 import enum
+from app.models.project_member import project_members
 
 class UserRole(enum.Enum):
     admin= "admin"
@@ -17,8 +18,12 @@ class User(BaseModel):
     organization_id= Column(ForeignKey("organizations.id"), nullable=False)
     organization= relationship("Organization", back_populates="users")
 
-    projects = relationship("Project", back_populates="users")
-    tasks = relationship("Task", back_populates="users")
-    comments = relationship("Comment", back_populates="users")
-    notifications = relationship("Notification", back_populates="users")
+    projects = relationship("Project", secondary=project_members, back_populates="users")
+    tasks = relationship("Task", back_populates="assignee")
+    comments = relationship("Comment", back_populates="author")
+    notifications = relationship("Notification", back_populates="user")
+
+    __table_args__ = (
+        Index('idx_users_email', 'email'),
+    )
     

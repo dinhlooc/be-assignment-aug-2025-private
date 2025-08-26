@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, ForeignKey, Enum
+from sqlalchemy import Column, String, Text, ForeignKey, Enum, Index
 from sqlalchemy.orm import relationship
 from app.models.baseModel import BaseModel
 import enum
@@ -22,4 +22,8 @@ class Task(BaseModel):
     assignee= relationship("User", back_populates="tasks")
     comments= relationship("Comment", back_populates="task")
     attachments= relationship("Attachment", back_populates="task")
+
+    __table_args__ = (
+        Index('idx_tasks_status_project_id', 'status', 'project_id'),
+    )
     
