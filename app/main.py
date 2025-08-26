@@ -3,6 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
+from app.core.middleware import LoggingMiddleware
+from app.core.handdlers import global_exception_handler,validation_exception_handler, domain_exception_handler
+from fastapi.exceptions import RequestValidationError
+from app.core.exceptions import DomainException
+from sqlalchemy.exc import IntegrityError
+
 from app.routers import (
     auth,
     users,
@@ -23,7 +29,9 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+
 # CORS middleware
+app.add_middleware(LoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Configure appropriately for production
@@ -31,7 +39,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+app.add_exception_handler(Exception, global_exception_handler)
+app.add_exception_handler(IntegrityError, global_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(DomainException, domain_exception_handler)
 # Mount static files for uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 

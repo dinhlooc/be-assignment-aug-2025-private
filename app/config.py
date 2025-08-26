@@ -4,13 +4,14 @@ from typing import Optional
 
 class Settings(BaseSettings):
     # Database
-    database_url: str = "postgresql://postgres:password@localhost:5432/task_management"
-    
+    database_url: str = "postgresql://postgres:123123@localhost:5432/task_management"
+   
+
     # Redis
     redis_url: str = "redis://localhost:6379"
     
     # JWT
-    secret_key: str = "your-super-secret-key-here-change-in-production"
+    secret_key: str = "SUPER_SECRET_KEY_dagadgjad"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     
@@ -26,6 +27,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"
 
 
 settings = Settings()
