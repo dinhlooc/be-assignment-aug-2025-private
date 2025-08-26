@@ -1,0 +1,24 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.schemas.request.auth_request import UserLoginRequest
+from app.schemas.response.auth_response import TokenResponse
+from app.services.auth_service import  authenticate_user
+from app.database import get_db
+from app.schemas.response.api_response import APIResponse
+from app.core.security import create_access_token
+from app.core.error_code import ErrorCode
+from app.core.exceptions import AuthenticationFailedException, AuthorizationFailedException
+
+
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+    
+@router.post("/login", response_model=APIResponse[TokenResponse])
+def login(user_in: UserLoginRequest, db: Session = Depends(get_db)):
+    token_response = authenticate_user(db, user_in.email, user_in.password)
+    return APIResponse(
+        code="200",       
+        message="success",
+        result=token_response
+    )
