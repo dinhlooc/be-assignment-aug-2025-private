@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, ForeignKey
+from sqlalchemy import Column, String, Text, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.models.baseModel import BaseModel
 from app.models.project_member import project_members
@@ -13,4 +13,6 @@ class Project(BaseModel):
     users = relationship("User", secondary=project_members, back_populates="projects")
     tasks = relationship("Task", back_populates="project")
 
-    
+    __table_args__ = (
+        UniqueConstraint('name', 'organization_id', name='uq_project_name_org'),
+    )

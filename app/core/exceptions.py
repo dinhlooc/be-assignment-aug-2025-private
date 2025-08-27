@@ -65,3 +65,23 @@ class UniqueConstraintViolationException(DomainException):
 class IntegrityErrorException(DomainException):
     def __init__(self, result=None):
         super().__init__(ErrorCode.INTEGRITY_ERROR, http_status=409, result=result)
+        
+class ProjectNameExistsException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.PROJECT_NAME_EXISTS)
+    message = ErrorCode.get_message(ErrorCode.PROJECT_NAME_EXISTS)
+    http_status = 400
+
+class UserNotInOrganizationException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.USER_NOT_IN_ORGANIZATION)
+    message = ErrorCode.get_message(ErrorCode.USER_NOT_IN_ORGANIZATION)
+    http_status = 400
+
+class UserAlreadyInProjectException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.USER_ALREADY_IN_PROJECT)
+    message = ErrorCode.get_message(ErrorCode.USER_ALREADY_IN_PROJECT)
+    http_status = 400
+
+class UserNotInProjectException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.USER_NOT_IN_PROJECT)
+    message = ErrorCode.get_message(ErrorCode.USER_NOT_IN_PROJECT)
+    http_status = 404 
