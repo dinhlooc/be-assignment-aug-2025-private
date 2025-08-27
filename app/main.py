@@ -1,8 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.openapi.utils import get_openapi
 
 from app.config import settings
+from app.core.middleware import LoggingMiddleware
+from app.core.handdlers import global_exception_handler,validation_exception_handler, domain_exception_handler
+from fastapi.exceptions import RequestValidationError
+from app.core.exceptions import DomainException
+from sqlalchemy.exc import IntegrityError
+
 from app.routers import (
     auth,
     users,
@@ -22,8 +29,46 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+
+    # Nếu components chưa tồn tại, khởi tạo
+    if "components" not in openapi_schema:
+        openapi_schema["components"] = {}
+
+    # Thêm securitySchemes mà không ghi đè các components khác
+    openapi_schema["components"]["securitySchemes"] = {
+        "OAuth2PasswordBearer": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+            "description": "Nhập JWT Token của bạn với tiền tố 'Bearer '"
+        }
+    }
+
+    # Áp dụng security requirement cho tất cả các endpoints
+    openapi_schema["security"] = [{"OAuth2PasswordBearer": []}]
+    for path in openapi_schema["paths"]:
+        if path == "/api/v1/auth/login":
+            for method in openapi_schema["paths"][path]:
+                openapi_schema["paths"][path][method]["security"] = []
+
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
+
 
 # CORS middleware
+app.add_middleware(LoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Configure appropriately for production
@@ -31,7 +76,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+app.add_exception_handler(Exception, global_exception_handler)
+app.add_exception_handler(IntegrityError, global_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(DomainException, domain_exception_handler)
 # Mount static files for uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
