@@ -13,8 +13,8 @@ from app.core.exceptions import AuthenticationFailedException, AuthorizationFail
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-    
-@router.post("/login", response_model=APIResponse[TokenResponse])
+
+@router.post("/login", response_model=APIResponse[TokenResponse], summary="Login")
 def login(user_in: UserLoginRequest, db: Session = Depends(get_db)):
     token_response = authenticate_user(db, user_in.email, user_in.password)
     return APIResponse(
