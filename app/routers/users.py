@@ -8,7 +8,7 @@ from app.core.error_code import ErrorCode
 from app.core.dependencies import get_current_user, require_admin
 from app.services.user_service import get_all_users, create_user_service
 from app.schemas.request.user_request import UserRegisterRequest
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.post("/", response_model=APIResponse)
 def create_user(
