@@ -71,6 +71,11 @@ class ProjectNameExistsException(DomainException):
     message = ErrorCode.get_message(ErrorCode.PROJECT_NAME_EXISTS)
     http_status = 400
 
+class ProjectNotFoundException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.PROJECT_NOT_FOUND)
+    message = ErrorCode.get_message(ErrorCode.PROJECT_NOT_FOUND)
+    http_status = 404
+
 class UserNotInOrganizationException(DomainException):
     code = ErrorCode.get_code(ErrorCode.USER_NOT_IN_ORGANIZATION)
     message = ErrorCode.get_message(ErrorCode.USER_NOT_IN_ORGANIZATION)
@@ -85,3 +90,28 @@ class UserNotInProjectException(DomainException):
     code = ErrorCode.get_code(ErrorCode.USER_NOT_IN_PROJECT)
     message = ErrorCode.get_message(ErrorCode.USER_NOT_IN_PROJECT)
     http_status = 404 
+
+class TaskNotFoundException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.TASK_NOT_FOUND)
+    message = ErrorCode.get_message(ErrorCode.TASK_NOT_FOUND)
+    http_status = 404
+
+class TaskAccessDeniedException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.TASK_ACCESS_DENIED)
+    message = ErrorCode.get_message(ErrorCode.TASK_ACCESS_DENIED)
+    http_status = 403
+
+class TaskInvalidStatusTransitionException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.TASK_INVALID_STATUS_TRANSITION)
+    message = ErrorCode.get_message(ErrorCode.TASK_INVALID_STATUS_TRANSITION)
+    http_status = 400
+
+class TaskAssigneeNotInProjectException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.TASK_ASSIGNEE_NOT_IN_PROJECT)
+    message = ErrorCode.get_message(ErrorCode.TASK_ASSIGNEE_NOT_IN_PROJECT)
+    http_status = 400
+
+class TaskInvalidDueDateException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.TASK_INVALID_DUE_DATE)
+    message = ErrorCode.get_message(ErrorCode.TASK_INVALID_DUE_DATE)
+    http_status = 400
