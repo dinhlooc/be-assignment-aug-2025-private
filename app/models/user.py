@@ -16,10 +16,11 @@ class User(BaseModel):
     hashed_password= Column(String, nullable=False)
     role= Column(Enum(UserRole), default=UserRole.member, nullable=False)
     organization_id= Column(ForeignKey("organizations.id"), nullable=False)
-    organization= relationship("Organization", back_populates="users")
 
+    organization= relationship("Organization", back_populates="users")
     projects = relationship("Project", secondary=project_members, back_populates="users")
-    tasks = relationship("Task", back_populates="assignee")
+    created_tasks = relationship("Task", back_populates="creator", foreign_keys="Task.creator_id")
+    assigned_tasks = relationship("Task", back_populates="assignee", foreign_keys="Task.assignee_id")
     comments = relationship("Comment", back_populates="author")
     notifications = relationship("Notification", back_populates="user")
 

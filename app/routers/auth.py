@@ -10,7 +10,7 @@ from app.core.error_code import ErrorCode
 from app.core.exceptions import AuthenticationFailedException, AuthorizationFailedException
 
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 
