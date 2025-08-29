@@ -4,7 +4,7 @@ from typing import List
 from uuid import UUID
 
 from app.database import get_db
-from app.core.dependencies import require_admin_or_manager, get_current_user,require_organization_member
+from app.core.dependencies import require_admin_or_manager, get_current_user,require_organization_member, require_project_access, require_project_management_permission
 from app.schemas.request.project_request import ProjectCreateRequest, ProjectUpdateRequest
 from app.schemas.response.project_response import ProjectResponse, ProjectListResponse
 from app.schemas.response.api_response import APIResponse
@@ -23,7 +23,7 @@ from app.services.project_member_service import (
 from app.schemas.request.project_request import ProjectMemberAddRequest
 from app.core.dependencies import require_project_admin, verify_same_organization,require_organization_access
 
-router = APIRouter(prefix="/projects", tags=["projects"])
+router = APIRouter(prefix="/projects", tags=["Projects"])
 
 @router.post("/", response_model=APIResponse, status_code=status.HTTP_201_CREATED)
 def create_project_endpoint(
@@ -47,31 +47,62 @@ def create_project_endpoint(
     )
 
 @router.get("/", response_model=APIResponse)
-def list_projects_endpoint(
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+def get_projects(
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    """List all projects for current user's organization"""
+    """
+    Get projects based on user role
+    """
     result = list_projects(db=db, current_user=current_user)
+    
+    # Thêm thông tin về access level
+    access_info = {
+        "user_role": current_user.role,
+        "access_level": "organization" if current_user.role == "admin" else "member_only",
+        "organization_id": str(current_user.organization_id)
+    }
     
     return APIResponse(
         code=200,
-        message="Success",
-        result=result
+        message=f"Retrieved {result.count} projects",
+        result={
+            "projects": result.items,
+            "total_count": result.count,
+            "access_info": access_info
+        }
     )
 
 @router.get("/{project_id}", response_model=APIResponse)
 def get_project_endpoint(
-    project_id: UUID,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    project_id: UUID ,
+    project_access = Depends(require_project_access),
+    db: Session = Depends(get_db)
 ):
-    """Get project details"""
+    """
+    Get project details with role-based access control
+    
+    **Access Rules:**
+    - Admin: Can view any project in their organization
+      - Gets full member details and management permissions
+    - Manager: Can only view projects they are members of
+      - Gets full member details and some management permissions
+    - Member: Can only view projects they are members of
+      - Gets basic member information only
+    
+    **Response includes:**
+    - Project details
+    - Member list (detail level based on user role)
+    - Task statistics
+    - User's permissions in this project
+    """
+    current_user, project = project_access
+    
     result = get_project(db=db, project_id=project_id, current_user=current_user)
     
     return APIResponse(
         code=200,
-        message="Success",
+        message="Project retrieved successfully",
         result=result
     )
 
@@ -119,7 +150,7 @@ def add_project_member_endpoint(
     project_id: UUID,
     member_in: ProjectMemberAddRequest,
     db: Session = Depends(get_db),
-    project_access=Depends(require_project_admin),  # Chỉ admin/manager có thể thêm
+    project_access=Depends(require_project_management_permission),  # Chỉ admin/manager có thể thêm
 ):
     """Add a user to a project"""
     current_user, project = project_access
@@ -168,7 +199,7 @@ def remove_project_member_endpoint(
 def get_project_members_endpoint(
     project_id: UUID,
     db: Session = Depends(get_db),
-    project_access = Depends(require_organization_access)  # Bất kỳ ai trong organization
+    project_access = Depends(require_project_access)  # Bất kỳ ai trong organization
 ):
     """Get all members of a project"""
     _, project = project_access

@@ -6,8 +6,10 @@ from app.repositories.project_member import (
     add_project_member as repo_add_project_member,
     remove_project_member as repo_remove_project_member,
     get_project_members as repo_get_project_members,
-    is_project_member as repo_is_project_member
+    is_project_member as repo_is_project_member,
+    
 )
+from app.repositories.project_member import get_project_members_basic as repo_get_project_members_basic
 from app.schemas.response.project_response import ProjectMemberResponse, ProjectMembersListResponse
 from app.core.exceptions import UserAlreadyInProjectException, UserNotInProjectException
 
@@ -66,3 +68,21 @@ def get_project_members(db: Session, project_id: UUID) -> ProjectMembersListResp
         items=member_responses,
         count=len(member_responses)
     )
+
+def get_project_members_basic(db: Session, project_id: UUID) -> List[dict]:
+    """
+    Get basic project member information (for regular members)
+    Returns only names and roles, not sensitive info
+    """
+    return repo_get_project_members_basic(db, project_id)
+
+def check_project_access_permission(
+    db: Session, 
+    project_id: UUID, 
+    user_id: UUID
+) -> bool:
+    """
+    Kiểm tra user có quyền access project không
+    """
+    from app.repositories.project_member import is_project_member
+    return is_project_member(db, project_id, user_id)
