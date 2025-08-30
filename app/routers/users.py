@@ -5,7 +5,8 @@ from uuid import UUID
 from app.database import get_db
 from app.schemas.response.api_response import APIResponse
 from app.core.error_code import ErrorCode
-from app.core.dependencies import get_current_user, require_admin
+from app.dependencies.auth import get_current_user
+from app.dependencies.role import require_admin
 from app.services.user_service import get_all_users, create_user_service
 from app.schemas.request.user_request import UserRegisterRequest
 router = APIRouter(prefix="/users", tags=["Users"])

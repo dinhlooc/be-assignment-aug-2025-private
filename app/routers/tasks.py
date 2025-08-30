@@ -4,7 +4,9 @@ from typing import List, Optional
 from uuid import UUID
 
 from app.database import get_db
-from app.core.dependencies import get_current_user, require_task_access, require_project_task_access, require_task_access_manager, require_task_access_update_status
+from app.dependencies.auth import get_current_user
+from app.dependencies.task import  require_task_access,  require_task_access_manager, require_task_access_update_status
+from app.dependencies.project import require_project_task_access
 from app.schemas.request.task_request import TaskCreateRequest, TaskUpdateRequest, TaskAssignRequest
 from app.schemas.response.task_response import TaskResponse, TaskListResponse
 from app.schemas.response.api_response import APIResponse

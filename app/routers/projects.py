@@ -4,7 +4,10 @@ from typing import List
 from uuid import UUID
 
 from app.database import get_db
-from app.core.dependencies import require_admin_or_manager, get_current_user,require_organization_member, require_project_access, require_project_management_permission
+from app.dependencies.auth import get_current_user
+from app.dependencies.role import require_admin_or_manager 
+from app.dependencies.project import require_project_access, require_project_management_permission, require_project_admin
+from app.dependencies.organization import  verify_same_organization
 from app.schemas.request.project_request import ProjectCreateRequest, ProjectUpdateRequest
 from app.schemas.response.project_response import ProjectResponse, ProjectListResponse
 from app.schemas.response.api_response import APIResponse
@@ -21,7 +24,7 @@ from app.services.project_member_service import (
     get_project_members
 )
 from app.schemas.request.project_request import ProjectMemberAddRequest
-from app.core.dependencies import require_project_admin, verify_same_organization,require_organization_access
+
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
 
