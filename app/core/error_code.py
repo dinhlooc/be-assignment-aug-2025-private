@@ -31,6 +31,11 @@ class ErrorCode:
     TASK_UPDATE_FAILED = (3008, "Task update failed")
     TASK_DELETE_FAILED = (3009, "Task deletion failed")
     TASK_ASSIGNMENT_FAILED = (3010, "Task assignment failed")
+    COMMENT_NOT_FOUND = (4001, "Comment not found")
+    COMMENT_ACCESS_DENIED = (4002, "Comment access denied")
+    COMMENT_CREATION_FAILED = (4003, "Comment creation failed")
+    COMMENT_UPDATE_FAILED = (4004, "Comment update failed")
+    COMMENT_DELETE_FAILED = (4005, "Comment delete failed")
 
     @staticmethod
     def get_code(error):

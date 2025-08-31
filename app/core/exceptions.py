@@ -98,7 +98,11 @@ class TaskNotFoundException(DomainException):
 
 class TaskAccessDeniedException(DomainException):
     code = ErrorCode.get_code(ErrorCode.TASK_ACCESS_DENIED)
-    message = ErrorCode.get_message(ErrorCode.TASK_ACCESS_DENIED)
+    def __init__(self, message=None):
+        if message is None:
+            message = ErrorCode.get_message(ErrorCode.TASK_ACCESS_DENIED)
+        self.message = message
+        super().__init__(self.message)
     http_status = 403
 
 class TaskInvalidStatusTransitionException(DomainException):
@@ -114,4 +118,53 @@ class TaskAssigneeNotInProjectException(DomainException):
 class TaskInvalidDueDateException(DomainException):
     code = ErrorCode.get_code(ErrorCode.TASK_INVALID_DUE_DATE)
     message = ErrorCode.get_message(ErrorCode.TASK_INVALID_DUE_DATE)
+    http_status = 400
+
+class CommentNotFoundException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.COMMENT_NOT_FOUND)
+    message = ErrorCode.get_message(ErrorCode.COMMENT_NOT_FOUND)
+    http_status = 404
+
+class CommentAccessDeniedException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.COMMENT_ACCESS_DENIED)
+    
+    def __init__(self, message=None):
+        if message is None:
+            message = ErrorCode.get_message(ErrorCode.COMMENT_ACCESS_DENIED)
+        self.message = message
+        super().__init__(self.message)
+    
+    http_status = 403
+
+class CommentCreationFailedException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.COMMENT_CREATION_FAILED)
+    
+    def __init__(self, message=None):
+        if message is None:
+            message = ErrorCode.get_message(ErrorCode.COMMENT_CREATION_FAILED)
+        self.message = message
+        super().__init__(self.message)
+    
+    http_status = 400
+
+class CommentUpdateFailedException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.COMMENT_UPDATE_FAILED)
+    
+    def __init__(self, message=None):
+        if message is None:
+            message = ErrorCode.get_message(ErrorCode.COMMENT_UPDATE_FAILED)
+        self.message = message
+        super().__init__(self.message)
+    
+    http_status = 400
+
+class CommentDeleteFailedException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.COMMENT_DELETE_FAILED)
+    
+    def __init__(self, message=None):
+        if message is None:
+            message = ErrorCode.get_message(ErrorCode.COMMENT_DELETE_FAILED)
+        self.message = message
+        super().__init__(self.message)
+    
     http_status = 400
