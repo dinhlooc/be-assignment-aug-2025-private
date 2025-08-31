@@ -6,6 +6,7 @@ from app.repositories import comment as comment_repo
 from app.repositories.task import get_task_by_id
 from app.schemas.request.comment_request import CommentCreateRequest, CommentUpdateRequest
 from app.schemas.response.comment_response import CommentListResponse, CommentResponse
+from app.services.notification_service import create_notification
 from app.core.exceptions import (
     CommentNotFoundException,
     CommentCreationFailedException,
@@ -38,6 +39,14 @@ def create_comment(
         
         # Create comment
         comment = comment_repo.create_comment(db, create_data)
+        user_notify= comment.task.assignee_id
+        create_notification(
+            user_id=user_notify,
+            title="New Comment Added",
+            message=f"A new comment was added to task: {comment.task.title}",
+            type_="comment_added",
+            related_id=comment.id
+        )
         
         # Convert to response format
         return CommentResponse(

@@ -9,6 +9,7 @@ from app.repositories.project import get_project_by_id
 from app.schemas.request.task_request import TaskCreateRequest, TaskUpdateRequest
 from app.schemas.response.task_response import TaskResponse, TaskListResponse
 from app.repositories.project_member import is_project_member
+from app.services.notification_service import create_notification
 from app.core.exceptions import (
     TaskNotFoundException,
     TaskAccessDeniedException, 
@@ -182,6 +183,14 @@ def assign_task_to_user(
         
     # Assign task
     updated_task = task_repo.assign_task(db, task_id, assignee_id)
+    if assignee_id != None:
+        create_notification(
+            user_id=assignee_id,
+            title="Task Assigned",
+            message=f"You have been assigned to task: {updated_task.title}",
+            type_="task_assigned",
+            related_id=task_id
+    )
     return TaskResponse.from_orm(updated_task)
 
 def get_tasks_by_assignee(db:Session, assignee_id: UUID, status: str = None) -> List[TaskListResponse]:
