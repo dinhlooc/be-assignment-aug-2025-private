@@ -7,7 +7,6 @@ from app.dependencies.task import require_task_access
 from app.core.exceptions import CommentNotFoundException, CommentAccessDeniedException
 from app.repositories.comment import get_comment_by_id
 from app.database import get_db
-from app.core.dependencies import get_db
 from app.services.project_member_service import check_project_access_permission
 
 def require_comment_access(
@@ -65,7 +64,6 @@ def require_comment_delete_access(
     
     Returns tuple of (current_user, comment)
     """
-    from app.core.dependencies import get_db
     from app.services.project_member_service import check_project_access_permission
     
     # Get comment

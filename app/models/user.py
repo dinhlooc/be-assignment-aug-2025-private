@@ -23,6 +23,7 @@ class User(BaseModel):
     assigned_tasks = relationship("Task", back_populates="assignee", foreign_keys="Task.assignee_id")
     comments = relationship("Comment", back_populates="author")
     notifications = relationship("Notification", back_populates="user")
+    attachments = relationship("Attachment", back_populates="author")
 
     __table_args__ = (
         Index('idx_users_email', 'email'),

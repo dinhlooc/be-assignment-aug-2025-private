@@ -36,6 +36,13 @@ class ErrorCode:
     COMMENT_CREATION_FAILED = (4003, "Comment creation failed")
     COMMENT_UPDATE_FAILED = (4004, "Comment update failed")
     COMMENT_DELETE_FAILED = (4005, "Comment delete failed")
+    # Thêm vào class ErrorCode
+    ATTACHMENT_NOT_FOUND = (5001, "Attachment not found")
+    ATTACHMENT_UPLOAD_FAILED = (5002, "Attachment upload failed")
+    ATTACHMENT_DELETE_FAILED = (5003, "Attachment delete failed")
+    ATTACHMENT_LIMIT_EXCEEDED = (5004, "Attachment limit exceeded")
+    ATTACHMENT_FILE_TOO_LARGE = (5005, "Attachment file too large")
+    ATTACHMENT_FILE_TYPE_INVALID = (5006, "Attachment file type invalid")
 
     @staticmethod
     def get_code(error):

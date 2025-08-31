@@ -9,7 +9,7 @@ from app.schemas.response.api_response import APIResponse
 from app.dependencies.auth import get_current_user
 from app.dependencies.task import require_task_access
 from app.dependencies.comment import require_comment_access, require_comment_edit_access, require_comment_delete_access
-from app.core.dependencies import get_db
+from app.database import get_db
 from app.services import comment_service
 
 comments_router = APIRouter(prefix="/comments", tags=["Comments"])

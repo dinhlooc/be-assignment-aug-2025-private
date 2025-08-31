@@ -168,3 +168,36 @@ class CommentDeleteFailedException(DomainException):
         super().__init__(self.message)
     
     http_status = 400
+
+
+class AttachmentNotFoundException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.ATTACHMENT_NOT_FOUND)
+    message = ErrorCode.get_message(ErrorCode.ATTACHMENT_NOT_FOUND)
+    http_status = 404
+
+class AttachmentUploadFailedException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.ATTACHMENT_UPLOAD_FAILED)
+    message = ErrorCode.get_message(ErrorCode.ATTACHMENT_UPLOAD_FAILED)
+    http_status = 400
+
+class AttachmentDeleteFailedException(DomainException):
+    def __init__(self, message=None):
+        if message is None:
+            message = ErrorCode.get_message(ErrorCode.ATTACHMENT_DELETE_FAILED)
+        self.message = message
+        super().__init__(self.message)
+
+class AttachmentLimitExceededException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.ATTACHMENT_LIMIT_EXCEEDED)
+    message = ErrorCode.get_message(ErrorCode.ATTACHMENT_LIMIT_EXCEEDED)
+    http_status = 400
+
+class AttachmentFileTooLargeException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.ATTACHMENT_FILE_TOO_LARGE)
+    message = ErrorCode.get_message(ErrorCode.ATTACHMENT_FILE_TOO_LARGE)
+    http_status = 400
+
+class AttachmentFileTypeInvalidException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.ATTACHMENT_FILE_TYPE_INVALID)
+    message = ErrorCode.get_message(ErrorCode.ATTACHMENT_FILE_TYPE_INVALID)
+    http_status = 400

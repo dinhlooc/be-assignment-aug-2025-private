@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", env="log_level")
     
     # File Upload
+    allowed_extensions: str = Field(default="pdf,docx,xlsx,png,jpg,jpeg,zip", env="allowed_extensions")
     max_file_size: int = Field(default=5242880, env="max_file_size")  # 5MB
     max_files_per_task: int = Field(default=3, env="max_files_per_task")
     upload_dir: str = Field(default="uploads", env="upload_dir")
