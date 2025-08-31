@@ -201,3 +201,24 @@ class AttachmentFileTypeInvalidException(DomainException):
     code = ErrorCode.get_code(ErrorCode.ATTACHMENT_FILE_TYPE_INVALID)
     message = ErrorCode.get_message(ErrorCode.ATTACHMENT_FILE_TYPE_INVALID)
     http_status = 400
+
+# Thêm vào cuối file
+class NotificationNotFoundException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.NOTIFICATION_NOT_FOUND)
+    message = ErrorCode.get_message(ErrorCode.NOTIFICATION_NOT_FOUND)
+    http_status = 404
+
+class NotificationMarkReadFailedException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.NOTIFICATION_MARK_READ_FAILED)
+    message = ErrorCode.get_message(ErrorCode.NOTIFICATION_MARK_READ_FAILED)
+    http_status = 400
+
+class NotificationDeleteFailedException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.NOTIFICATION_DELETE_FAILED)
+    message = ErrorCode.get_message(ErrorCode.NOTIFICATION_DELETE_FAILED)
+    http_status = 400
+
+class NotificationCreateFailedException(DomainException):
+    code = ErrorCode.get_code(ErrorCode.NOTIFICATION_CREATE_FAILED)
+    message = ErrorCode.get_message(ErrorCode.NOTIFICATION_CREATE_FAILED)
+    http_status = 400

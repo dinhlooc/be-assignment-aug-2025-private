@@ -108,3 +108,12 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+@app.on_event("startup")
+def startup_event():
+    try:
+        from app.repositories.notification import redis_client
+        redis_client.ping()
+        print("✅ Redis connected successfully")
+    except Exception as e:
+        print(f"❌ Redis connection failed: {e}")

@@ -43,6 +43,11 @@ class ErrorCode:
     ATTACHMENT_LIMIT_EXCEEDED = (5004, "Attachment limit exceeded")
     ATTACHMENT_FILE_TOO_LARGE = (5005, "Attachment file too large")
     ATTACHMENT_FILE_TYPE_INVALID = (5006, "Attachment file type invalid")
+    # Thêm vào class ErrorCode
+    NOTIFICATION_NOT_FOUND = (6001, "Notification not found")
+    NOTIFICATION_MARK_READ_FAILED = (6002, "Failed to mark notification as read")
+    NOTIFICATION_DELETE_FAILED = (6003, "Failed to delete notification")
+    NOTIFICATION_CREATE_FAILED = (6004, "Failed to create notification")
 
     @staticmethod
     def get_code(error):

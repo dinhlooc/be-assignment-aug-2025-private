@@ -6,8 +6,12 @@ class Settings(BaseSettings):
     # Database
     database_url: str = Field(..., env="database_url")
     
-    # Redis
-    redis_url: str = Field(default="redis://localhost:6379", env="redis_url")
+    # Redis Configuration
+    redis_host: str = Field(default="localhost", env="redis_host")
+    redis_port: int = Field(default=6379, env="redis_port")
+    redis_db: int = Field(default=0, env="redis_db")
+    redis_password: Optional[str] = Field(default=None, env="redis_password")
+    notification_ttl: int = Field(default=2592000, env="notification_ttl")
 
     # JWT
     secret_key: str = Field(..., env="secret_key")
