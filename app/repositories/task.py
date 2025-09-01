@@ -27,7 +27,7 @@ def get_tasks_with_cache(
     #try to get from cache first
     cached_data = redis_client.get(cache_key)
     if cached_data:
-        print("Cache hit for tasks")        
+        print("Cache hit for tasks")
         task_ids= json.loads(cached_data)
         if task_ids:
             tasks = (

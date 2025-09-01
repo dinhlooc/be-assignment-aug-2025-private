@@ -18,6 +18,7 @@ from app.core.exceptions import (
     TaskInvalidDueDateException,
     ProjectNotFoundException
 )
+from app.repositories.report import invalidate_project_report_cache
 
 def create_task(
     db: Session,
@@ -63,7 +64,7 @@ def create_task(
         creator_id=creator_id,
         assignee_id=task_data.assignee_id
     )
-    
+    invalidate_project_report_cache(project_id)
     return TaskResponse.from_orm(task)
 
 def get_task_details(db: Session, task_id: UUID, user_id: UUID) -> TaskResponse:
@@ -135,7 +136,7 @@ def update_task(
     if not task:
         raise TaskNotFoundException()
     
-    
+    invalidate_project_report_cache(task.project_id)
     # Validate status transition
     if task_data.status:
         if not _is_valid_status_transition(task.status, task_data.status.value):
@@ -164,7 +165,7 @@ def delete_task(db: Session, task_id: UUID, user_id: UUID) -> bool:
     task = task_repo.get_task_by_id(db, task_id)
     if not task:
         raise TaskNotFoundException()
-    
+    invalidate_project_report_cache(task.project_id)
     # Check access (only creator or project admin can delete)
     if task.creator_id != user_id:
         if not task_repo.check_user_access_to_task(db, task_id, user_id):

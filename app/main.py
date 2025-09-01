@@ -90,9 +90,9 @@ app.include_router(organizations.router, prefix="/api/v1")
 app.include_router(projects.router, prefix="/api/v1")
 app.include_router(tasks.router, prefix="/api/v1")
 app.include_router(comments.router, prefix="/api/v1")
-app.include_router(attachments.router, prefix="/api/v1", tags=["Attachments"])
-app.include_router(notifications.router, prefix="/api/v1", tags=["Notifications"])
-app.include_router(reports.router, prefix="/api/v1", tags=["Reports"])
+app.include_router(attachments.router, prefix="/api/v1")
+app.include_router(notifications.router, prefix="/api/v1")
+app.include_router(reports.router, prefix="/api/v1")
 
 
 @app.get("/")
