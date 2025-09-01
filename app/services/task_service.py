@@ -93,11 +93,11 @@ def get_project_tasks(
     
     
     
-    tasks = task_repo.get_tasks_by_project(
+    tasks = task_repo.get_tasks_with_cache(
         db=db,
         project_id=project_id,
-        status=status,
         assignee_id=assignee_id,
+        status=status,
         priority=priority,
         skip=skip,
         limit=limit

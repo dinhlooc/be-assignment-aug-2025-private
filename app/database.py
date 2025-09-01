@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.config import settings
-
+import redis
 # Create database engine
 engine = create_engine(settings.database_url)
 
@@ -20,3 +20,12 @@ def get_db():
         yield db
     finally:
         db.close()
+
+# Redis client for caching
+redis_client = redis.Redis(
+    host=settings.redis_host,
+    port=settings.redis_port,
+    db=settings.redis_db,
+    password=settings.redis_password,
+    decode_responses=True
+)

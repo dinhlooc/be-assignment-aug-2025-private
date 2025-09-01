@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     redis_db: int = Field(default=0, env="redis_db")
     redis_password: Optional[str] = Field(default=None, env="redis_password")
     notification_ttl: int = Field(default=2592000, env="notification_ttl")
+    task_cache_expiration: int = Field(default=300, env="task_cache_expiration")  # 5 minutes
 
     # JWT
     secret_key: str = Field(..., env="secret_key")

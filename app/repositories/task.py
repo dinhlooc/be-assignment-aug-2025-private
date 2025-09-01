@@ -3,12 +3,109 @@ from sqlalchemy import and_, or_
 from typing import List, Optional, Dict, Any
 from uuid import UUID
 from datetime import datetime
-
+import json
 from app.models.task import Task
 from app.models.user import User
 from app.models.project import Project
 from app.core.exceptions import TaskNotFoundException
 from app.repositories.project_member import is_project_member
+from app.config import settings
+from app.database import redis_client
+
+def get_tasks_with_cache(
+    db: Session,
+    project_id: Optional[UUID] = None,
+    assignee_id: Optional[UUID] = None,
+    status: Optional[str] = None,
+    priority: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100
+) -> List[Task]:
+    #created cache base on filters
+    cache_key = _generate_tasks_cache_key(project_id,assignee_id,status, priority, skip, limit)
+
+    #try to get from cache first
+    cached_data = redis_client.get(cache_key)
+    if cached_data:
+        print("Cache hit for tasks")        
+        task_ids= json.loads(cached_data)
+        if task_ids:
+            tasks = (
+                db.query(Task)
+                .options(joinedload(Task.creator), joinedload(Task.assignee))
+                .filter(Task.id.in_(task_ids)).all()
+                )
+            task_dict = {str(task.id): task for task in tasks}
+            return [task_dict[task_id] for task_id in task_ids if task_id in task_dict]
+        
+    # if not cache 
+    query = db.query(Task).options(joinedload(Task.creator), joinedload(Task.assignee)) 
+    if project_id:
+        query = query.filter(Task.project_id == project_id)
+    if assignee_id:
+        query = query.filter(Task.assignee_id == assignee_id)
+    if status:
+        query = query.filter(Task.status == status)
+    if priority:
+        query = query.filter(Task.priority == priority)
+    
+    tasks = query.offset(skip).limit(limit).all()
+
+    # Cache task IDs
+    task_ids= [str(task.id) for task in tasks]
+    redis_client.setex(cache_key, settings.task_cache_expiration, json.dumps(task_ids))
+
+    return tasks
+
+def _generate_tasks_cache_key(
+        project_id: Optional[UUID],
+        assignee_id: Optional[UUID],
+        status: Optional[str],
+        priority: Optional[str],
+        skip: int,
+        limit: int
+) -> str:
+    key_parts = ["tasks"]
+
+    if project_id:
+        key_parts.append(f"project:{project_id}")
+    else:
+        key_parts.append("all")
+    filters = []
+    if assignee_id:
+        filters.append(f"assignee:{assignee_id}")
+    if status:
+        filters.append(f"status:{status}")
+    if priority:
+        filters.append(f"priority:{priority}")
+    
+    if filters:
+        key_parts.append("filters:" + "|".join(filters))
+    
+    key_parts.extend([f"skip:{skip}", f"limit:{limit}"])
+    
+    return ":".join(key_parts)
+
+def invalidate_task_cache(
+    project_id: Optional[UUID] = None,
+    task_id: Optional[UUID] = None
+):
+
+    pattern ="task:*"
+    if project_id:
+        pattern = f"tasks:project:{project_id}:*"
+    elif task_id:
+        pattern = f"tasks:projects:*:*"
+
+    cursor = 0
+    while True:
+        cursor, keys = redis_client.scan(cursor=cursor, match=pattern, count=100)
+        if keys:
+            redis_client.delete(*keys)
+        if cursor == 0:
+            break
+
+
 def create_task(
     db: Session,
     title: str,
@@ -35,6 +132,9 @@ def create_task(
     db.add(task)
     db.commit()
     db.refresh(task)
+
+    invalidate_task_cache(project_id=project_id, task_id=task.id)
+
     return task
 
 def get_task_by_id(db: Session, task_id: UUID) -> Optional[Task]:
@@ -106,6 +206,7 @@ def update_task(db: Session, task_id: UUID, task_data: Dict[str, Any]) -> Option
     
     db.commit()
     db.refresh(task)
+    invalidate_task_cache(project_id=task.project_id, task_id=task.id)
     return task
 
 def delete_task(db: Session, task_id: UUID) -> bool:
@@ -116,6 +217,7 @@ def delete_task(db: Session, task_id: UUID) -> bool:
     
     db.delete(task)
     db.commit()
+    invalidate_task_cache(project_id=task.project_id, task_id=task.id)
     return True
 
 def assign_task(db: Session, task_id: UUID, assignee_id: UUID) -> Optional[Task]:
