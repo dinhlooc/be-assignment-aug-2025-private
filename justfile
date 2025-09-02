@@ -67,6 +67,13 @@ docker-stop:
 docker-logs:
     docker-compose logs -f
 
+docker-db-setup:
+    docker-compose exec web python scripts/setup_db.py
+
+# Docker database seed
+docker-db-seed:
+    docker-compose exec web python scripts/seed.py
+
 # Development setup
 dev-setup: install-dev setup-db seed
     @echo "Development environment setup complete!"

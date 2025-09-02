@@ -137,6 +137,7 @@ def update_task(
         raise TaskNotFoundException()
     
     invalidate_project_report_cache(task.project_id)
+    old_status = task.status
     # Validate status transition
     if task_data.status:
         if not _is_valid_status_transition(task.status, task_data.status.value):
@@ -157,6 +158,14 @@ def update_task(
     
     # Update task
     updated_task = task_repo.update_task(db, task_id, update_data)
+    user_notify= updated_task.assignee_id
+    create_notification(
+            user_id=user_notify,
+            title="Task Status Updated",
+            message=f"Task '{updated_task.title}' status changed from {old_status} to {updated_task.status}",
+            type_="task_status_updated",
+            related_id=updated_task.id
+    )
     return TaskResponse.from_orm(updated_task)
 
 def delete_task(db: Session, task_id: UUID, user_id: UUID) -> bool:
