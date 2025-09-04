@@ -78,8 +78,8 @@ just docker-db-seed
 - Nginx (proxy) → FastAPI (backend) → PostgreSQL (database)  
 - Redis hỗ trợ cache và pub/sub notification  
 
-### Sơ đồ khác
-![ERD](img/ERD.png)
+### Sơ đò ERD
+- ![ERD](img/ERD.png)   
 
 ---
 
