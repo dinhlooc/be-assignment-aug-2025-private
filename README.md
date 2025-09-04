@@ -1,125 +1,116 @@
-# 📑 Intern Backend Developer Assignment
+# Task Management Backend
 
-- Copyright (c) River Flow Solutions, Jsc. 2025. All rights reserved.
-- We only use the submissions for candidates evaluation.
+Task Management Backend là một dự án được xây dựng với **FastAPI**, hỗ trợ quản lý người dùng, tổ chức, dự án, nhiệm vụ và báo cáo.  
+Kiến trúc hệ thống gồm nhiều service (Auth, User, Project, Task, Notification, Report, …) được tổ chức theo **clean architecture** và chạy trong container.
 
-## **A. Instructions**
-- Candidate must fork this repository to a public repo under their name for submission. Notify email `hr@riverflow.solutions` when done.
-- Build a **multi-organization Task Management backend** (organizations → projects → tasks) with basic collaboration and notifications.  
-- **Stack**: Python, FastAPI, PostgreSQL, Redis, Nginx.
-- Use Justfile for all run and development commands.
-- Use Docker for deployment.
-- Deliverables: GitHub repo, ER + System design diagrams, Dockerized deployment, README. 
+![Architecture](docs/architecture.png)
 
 ---
 
-## **B. Task Management Requirements & Use Cases**
+## 🚀 Yêu cầu hệ thống
 
-### **B1. Functional Scope**
-- **Organizations & Users**
-  - Each user belongs to an organization.  
-  - Roles: **Admin**, **Manager**, **Member**.  
-
-- **Projects**
-  - Belong to one organization.  
-  - Can add/remove members.  
-  - Admin/Manager can create projects, Members can only participate.  
-
-- **Tasks**
-  - CRUD operations.  
-  - Belong to a project.  
-  - Fields: title, description, status (`todo/in-progress/done`), priority (`low/medium/high`), due_date, assignee.  
-  - Status workflow: `todo → in-progress → done` (no complex review step).  
-
-- **Collaboration**
-  - Users can comment on tasks.  
-  - Users can upload simple file attachments (local storage).  
-
-- **Notifications**
-  - Users receive a notification when:  
-    - They are assigned a task.  
-    - Task status changes.  
-    - A comment is added to their task.  
-
-- **Reports (Basic)**
-  - Count of tasks by status in a project.  
-  - List of overdue tasks.  
+- Python >= 3.10
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Just](https://github.com/casey/just) (task runner thay cho Makefile)
 
 ---
 
-### **B2. Use Cases**
-1. **User Management**
-   - Register/login with JWT.  
-   - Admin adds users to the organization.  
+## 🔧 Cài đặt & Chạy dự án
 
-2. **Project Management**
-   - Create/list projects.  
-   - Add/remove project members.  
+### 1. Clone repository
 
-3. **Task Management**
-   - Create tasks with title, description, assignee, priority, due date.  
-   - Update task status (`todo → in-progress → done`).  
-   - List tasks in a project (filter by status, assignee, priority).  
+```bash
+git clone https://github.com/your-username/task-management-backend.git
+cd task-management-backend
+```
 
-4. **Collaboration**
-   - Add comments to tasks.  
-   - Upload attachment to a task.  
+### 2. Build Docker image
 
-5. **Notifications**
-   - Retrieve unread notifications.  
-   - Mark notifications as read.  
+```bash
+just docker-build
+```
 
-6. **Reporting**
-   - Get per-project task count by status.  
-   - Get overdue tasks in a project.  
+### 3. Chạy container
 
----
+```bash
+just docker-run
+```
 
-### **B3. Business Rules**
-- Only project members can create or update tasks in that project.  
-- Only Admin/Manager can assign tasks to others. Members can assign only to themselves.  
-- Due date must be today or in the future (not past).  
-- Task status can only progress forward (`todo → in-progress → done`), but not backward.  
-- Attachments limited to 5MB each, max 3 per task.  
+Ứng dụng sẽ chạy tại:
 
----
+- Nginx Proxy: [http://localhost](http://localhost)
+- FastAPI Service trực tiếp: [http://localhost:8000](http://localhost:8000)
 
-## **C. Tech Requirements**
-- **Backend**: Python + FastAPI, SQLAlchemy, Alembic migrations.  
-- **Database**: PostgreSQL with foreign keys + indexes.  
-- **Cache/Notify**: Redis for caching task lists and storing notifications.  
-- **Auth**: JWT (PyJWT) + role-based access (Admin/Manager/Member).  
-- **Testing**: pytest with mock PostgreSQL & Redis.  
-- **Deployment**: Docker + docker-compose (FastAPI + PostgreSQL + Redis + Nginx).  
+### 4. Khởi tạo database
+
+```bash
+just docker-db-setup
+```
+
+### 5. Seed dữ liệu mẫu
+
+```bash
+just docker-db-seed
+```
 
 ---
 
-## **D. Review Criteria**
+## ⚙️ Các lệnh hữu ích với `just`
 
-### **D1. Database & System Design**
-- [ ] Schema with correct relations & constraints.  
-- [ ] Indexes on `users(email)`, `tasks(status, project_id)`.  
-- [ ] ER diagram + system design diagram included.  
+- Chạy app local (không Docker):
 
-### **D2. Core Functionality**
-- [ ] JWT auth with role-based permissions.  
-- [ ] CRUD for Projects and Tasks with proper rules.  
-- [ ] Status workflow enforced (`todo → in-progress → done`).  
-- [ ] Comments & file attachments working.  
-- [ ] Notifications created on assign/status/comment.  
-- [ ] Basic reporting endpoints working.  
+  ```bash
+  just run
+  ```
 
-### **D3. Code Quality**
-- [ ] Centralized error handling & logging.  
-- [ ] Configurable via `.env`.  
+- Chạy test:
 
-### **D4. Testing**
-- [ ] Coverage ≥ 70%.  
+  ```bash
+  just test
+  ```
 
-### **D5. Deployment**
-- [ ] Nginx configuration.  
-- [ ] Dockerized deployment (Include Nginx)
+- Format code:
 
-### **D6. Documentation**
-- [ ] README with setup guide.  
-- [ ] API documentation (Swagger UI).
+  ```bash
+  just format
+  ```
+
+- Migration database:
+
+  ```bash
+  just db-migrate message="init migration"
+  just db-upgrade
+  ```
+
+---
+
+## 🧪 Kiểm tra API
+
+Sau khi chạy xong container, có thể test API qua **Swagger UI**:
+
+- Thông qua **Nginx Proxy**  
+  👉 [http://localhost/docs#/](http://localhost/docs#/)
+
+- Thông qua **FastAPI trực tiếp**  
+  👉 [http://localhost:8000/docs#/](http://localhost:8000/docs#/)
+
+---
+
+## 📂 Cấu trúc chính
+
+```
+.
+├── app/                # Source code FastAPI
+├── scripts/            # Script setup, seed DB
+├── tests/              # Unit & integration tests
+├── docker-compose.yml
+├── Justfile
+└── README.md
+```
+
+---
+
+## 📝 License
+
+MIT License. Xem chi tiết tại [LICENSE](LICENSE).
