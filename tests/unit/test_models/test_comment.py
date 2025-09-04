@@ -1,20 +1,14 @@
 import pytest
 from uuid import uuid4
 
-# Import model thực để kiểm thử thuộc tính
 from app.models.comment import Comment
-
-# Import model test để kiểm thử database
 from tests.test_models import TestComment
 
 def test_comment_creation():
-    """Test tạo comment với các thuộc tính cơ bản."""
-    # Arrange
     comment_id = uuid4()
     task_id = uuid4()
     author_id = uuid4()
     
-    # Act
     comment = Comment(
         id=comment_id,
         content="Test Comment Content",
@@ -22,15 +16,12 @@ def test_comment_creation():
         author_id=author_id
     )
     
-    # Assert
     assert comment.id == comment_id
     assert comment.content == "Test Comment Content"
     assert comment.task_id == task_id
     assert comment.author_id == author_id
 
 def test_comment_in_database(db_session, test_task, test_user):
-    """Test lưu và truy xuất Comment từ database."""
-    # Arrange
     comment_id = str(uuid4())
     comment = TestComment(
         id=comment_id,
@@ -39,14 +30,11 @@ def test_comment_in_database(db_session, test_task, test_user):
         author_id=test_user.id
     )
     
-    # Act - Lưu vào database
     db_session.add(comment)
     db_session.commit()
     
-    # Truy xuất từ database
     saved_comment = db_session.query(TestComment).filter(TestComment.id == comment_id).first()
     
-    # Assert
     assert saved_comment is not None
     assert saved_comment.id == comment_id
     assert saved_comment.content == "Database Test Comment"

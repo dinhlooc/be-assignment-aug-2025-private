@@ -3,15 +3,11 @@ from unittest.mock import patch, MagicMock
 from uuid import uuid4
 from datetime import datetime
 
-# Import trực tiếp từ notification_service để đảm bảo dùng đúng các hàm
 from app.services import notification_service
 from app.schemas.response.notification_response import NotificationResponse
 from app.schemas.redis.notification_redis import NotificationRedis
 
 
-# ---------------------------
-# Helper: Tạo mock notification
-# ---------------------------
 def create_mock_notification_redis(
     user_id=None,
     notification_id=None,
@@ -36,14 +32,10 @@ def create_mock_notification_redis(
     )
 
 
-# ---------------------------
-# Fixture: Mock Redis client
-# ---------------------------
 @pytest.fixture(autouse=True)
 def mock_redis():
     with patch("app.database.redis_client", MagicMock()) as mock_client:
         with patch("app.repositories.notification.redis_client", mock_client):
-            # Thiết lập hành vi cơ bản của Redis mock
             mock_client.get.return_value = None
             mock_client.set.return_value = True
             mock_client.delete.return_value = True
@@ -53,9 +45,6 @@ def mock_redis():
             yield mock_client
 
 
-# ---------------------------
-# Tests
-# ---------------------------
 def test_create_notification():
     user_id = uuid4()
     title = "Test Notification"
@@ -67,7 +56,6 @@ def test_create_notification():
         str(user_id), title=title, message=message
     )
 
-    # Import function để đảm bảo redis_client được mock trước khi import
     from app.services.notification_service import create_notification
     
     with patch(
@@ -91,7 +79,6 @@ def test_get_user_notifications():
         create_mock_notification_redis(str(user_id)) for _ in range(3)
     ]
 
-    # Import function để đảm bảo redis_client được mock trước khi import
     from app.services.notification_service import get_user_notifications
     
     with patch(
@@ -106,13 +93,10 @@ def test_get_user_notifications():
         assert item.user_id == user_id
 
 
-
-
 def test_get_notification_not_found():
     user_id = uuid4()
     notification_id = str(uuid4())
 
-    # Import function để đảm bảo redis_client được mock trước khi import
     from app.services.notification_service import get_notification
     
     with patch("app.repositories.notification.get_notification", return_value=None):
@@ -125,10 +109,8 @@ def test_mark_as_read_success():
     user_id = uuid4()
     notification_id = str(uuid4())
 
-    # Import function để đảm bảo redis_client được mock trước khi import
     from app.services.notification_service import mark_as_read
     
-    # Đảm bảo mock đúng đường dẫn và trả về True
     with patch("app.repositories.notification.mark_as_read", return_value=True):
         result = mark_as_read(user_id, notification_id)
 
@@ -139,7 +121,6 @@ def test_mark_as_read_failed():
     user_id = uuid4()
     notification_id = str(uuid4())
 
-    # Import function để đảm bảo redis_client được mock trước khi import
     from app.services.notification_service import mark_as_read
     
     with patch("app.repositories.notification.mark_as_read", return_value=False):
@@ -152,7 +133,6 @@ def test_mark_all_as_read():
     user_id = uuid4()
     expected_count = 0
 
-    # Import function để đảm bảo redis_client được mock trước khi import
     from app.services.notification_service import mark_all_as_read
     
     with patch(
@@ -167,7 +147,6 @@ def test_delete_notification_success():
     user_id = uuid4()
     notification_id = str(uuid4())
 
-    # Import function để đảm bảo redis_client được mock trước khi import
     from app.services.notification_service import delete_notification
     
     with patch("app.repositories.notification.delete_notification", return_value=True):
@@ -180,7 +159,6 @@ def test_delete_notification_failed():
     user_id = uuid4()
     notification_id = str(uuid4())
 
-    # Import function để đảm bảo redis_client được mock trước khi import
     from app.services.notification_service import delete_notification
     
     with patch("app.repositories.notification.delete_notification", return_value=False):
@@ -193,7 +171,6 @@ def test_get_unread_count():
     user_id = uuid4()
     expected_count = 0
 
-    # Import function để đảm bảo redis_client được mock trước khi import
     from app.services.notification_service import get_unread_count
     
     with patch(

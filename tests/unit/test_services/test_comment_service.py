@@ -12,7 +12,6 @@ from app.schemas.response.comment_response import CommentResponse, CommentListRe
 from app.core.exceptions import CommentNotFoundException, TaskNotFoundException
 
 
-# ====== Helpers ======
 def make_mock_task():
     mock_task = MagicMock()
     mock_task.id = uuid4()
@@ -26,8 +25,6 @@ def make_mock_task():
     mock_task.due_date = None
     mock_task.created_at = datetime.utcnow()
     mock_task.updated_at = datetime.utcnow()
-    
-    # Add any additional properties that might be used by the service
     return mock_task
 
 def make_mock_user():
@@ -61,9 +58,6 @@ def make_mock_comment(task=None, user=None):
     return comment
 
 
-# ====== Tests ======
-
-
 def test_create_comment_task_not_found(db_session):
     task_id = uuid4()
     user_id = uuid4()
@@ -80,7 +74,7 @@ def test_get_task_comments(db_session):
     comment = make_mock_comment(task, user)
 
     with patch("app.services.comment_service.get_task_by_id", return_value=task), \
-     patch("app.repositories.comment.get_comments_by_task", return_value=[comment]):
+         patch("app.repositories.comment.get_comments_by_task", return_value=[comment]):
         result = get_task_comments(db_session, task.id)
 
     assert isinstance(result, list)

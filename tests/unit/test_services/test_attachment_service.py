@@ -43,14 +43,14 @@ def test_upload_attachment_limit_exceeded(db_session, test_task, test_user):
     mock_file = MagicMock()
     mock_file.filename = "test.jpg"
 
-    with patch("app.repositories.attachment.count_attachments_by_task", return_value=3):  # Max limit = 3
+    with patch("app.repositories.attachment.count_attachments_by_task", return_value=3):
         with pytest.raises(AttachmentLimitExceededException):
             upload_attachment(db_session, test_task.id, mock_file, test_user.id)
 
 
 def test_upload_attachment_invalid_file_type(db_session, test_task, test_user):
     mock_file = MagicMock()
-    mock_file.filename = "test.exe"  # Executable not allowed
+    mock_file.filename = "test.exe"
 
     with patch("app.repositories.attachment.count_attachments_by_task", return_value=0):
         with patch("app.services.attachment_service.validate_file", side_effect=AttachmentFileTypeInvalidException):
