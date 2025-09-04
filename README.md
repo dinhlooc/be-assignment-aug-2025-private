@@ -1,125 +1,221 @@
-# 📑 Intern Backend Developer Assignment
+# BE Assignment Aug 2025
 
-- Copyright (c) River Flow Solutions, Jsc. 2025. All rights reserved.
-- We only use the submissions for candidates evaluation.
-
-## **A. Instructions**
-- Candidate must fork this repository to a public repo under their name for submission. Notify email `hr@riverflow.solutions` when done.
-- Build a **multi-organization Task Management backend** (organizations → projects → tasks) with basic collaboration and notifications.  
-- **Stack**: Python, FastAPI, PostgreSQL, Redis, Nginx.
-- Use Justfile for all run and development commands.
-- Use Docker for deployment.
-- Deliverables: GitHub repo, ER + System design diagrams, Dockerized deployment, README. 
+📑 **Intern Backend Developer Assignment**  
+Copyright (c) River Flow Solutions, Jsc. 2025. All rights reserved.  
+We only use the submissions for candidates evaluation.
 
 ---
 
-## **B. Task Management Requirements & Use Cases**
+## 🚀 Giới thiệu
 
-### **B1. Functional Scope**
-- **Organizations & Users**
-  - Each user belongs to an organization.  
-  - Roles: **Admin**, **Manager**, **Member**.  
-
-- **Projects**
-  - Belong to one organization.  
-  - Can add/remove members.  
-  - Admin/Manager can create projects, Members can only participate.  
-
-- **Tasks**
-  - CRUD operations.  
-  - Belong to a project.  
-  - Fields: title, description, status (`todo/in-progress/done`), priority (`low/medium/high`), due_date, assignee.  
-  - Status workflow: `todo → in-progress → done` (no complex review step).  
-
-- **Collaboration**
-  - Users can comment on tasks.  
-  - Users can upload simple file attachments (local storage).  
-
-- **Notifications**
-  - Users receive a notification when:  
-    - They are assigned a task.  
-    - Task status changes.  
-    - A comment is added to their task.  
-
-- **Reports (Basic)**
-  - Count of tasks by status in a project.  
-  - List of overdue tasks.  
+Dự án **Task Management Backend** được xây dựng trong khuôn khổ **bài test Intern Backend Developer**.  
+Mục tiêu: xây dựng hệ thống quản lý nhiều tổ chức (multi-organization), hỗ trợ dự án, nhiệm vụ, thành viên, bình luận, thông báo và báo cáo.  
 
 ---
 
-### **B2. Use Cases**
-1. **User Management**
-   - Register/login with JWT.  
-   - Admin adds users to the organization.  
+## 🛠️ Công nghệ & Công cụ
 
-2. **Project Management**
-   - Create/list projects.  
-   - Add/remove project members.  
-
-3. **Task Management**
-   - Create tasks with title, description, assignee, priority, due date.  
-   - Update task status (`todo → in-progress → done`).  
-   - List tasks in a project (filter by status, assignee, priority).  
-
-4. **Collaboration**
-   - Add comments to tasks.  
-   - Upload attachment to a task.  
-
-5. **Notifications**
-   - Retrieve unread notifications.  
-   - Mark notifications as read.  
-
-6. **Reporting**
-   - Get per-project task count by status.  
-   - Get overdue tasks in a project.  
+- **Ngôn ngữ:** Python (FastAPI, SQLAlchemy, Alembic)  
+- **CSDL:** PostgreSQL  
+- **Cache/Notify:** Redis (cache, pub/sub)  
+- **Proxy:** Nginx  
+- **Triển khai:** Docker + Docker Compose  
+- **Task runner:** Justfile  
+- **Auth:** JWT + Role-based access (Admin, Manager, Member)  
 
 ---
 
-### **B3. Business Rules**
-- Only project members can create or update tasks in that project.  
-- Only Admin/Manager can assign tasks to others. Members can assign only to themselves.  
-- Due date must be today or in the future (not past).  
-- Task status can only progress forward (`todo → in-progress → done`), but not backward.  
-- Attachments limited to 5MB each, max 3 per task.  
+## 🔧 Hướng dẫn cài đặt
+
+### 1. Clone repo
+
+```bash
+git clone https://github.com/dinhlooc/be-assignment-aug-2025-private.git
+cd be-assignment-aug-2025-private
+```
+
+### 2. Build Docker image
+
+```bash
+just docker-build
+```
+
+### 3. Chạy container
+
+```bash
+just docker-run
+```
+
+Ứng dụng sẽ chạy tại:
+
+- **Nginx Proxy:** [http://localhost](http://localhost)  
+- **FastAPI Service trực tiếp:** [http://localhost:8000](http://localhost:8000)  
+
+### 4. Khởi tạo database
+
+```bash
+just docker-db-setup
+```
+
+### 5. Seed dữ liệu mẫu
+
+```bash
+just docker-db-seed
+```
 
 ---
 
-## **C. Tech Requirements**
-- **Backend**: Python + FastAPI, SQLAlchemy, Alembic migrations.  
-- **Database**: PostgreSQL with foreign keys + indexes.  
-- **Cache/Notify**: Redis for caching task lists and storing notifications.  
-- **Auth**: JWT (PyJWT) + role-based access (Admin/Manager/Member).  
-- **Testing**: pytest with mock PostgreSQL & Redis.  
-- **Deployment**: Docker + docker-compose (FastAPI + PostgreSQL + Redis + Nginx).  
+## 🏗️ Kiến trúc hệ thống
+
+### Tổng quan container
+
+![Docker Containers](img/docker.png)
+
+### Kiến trúc logic
+
+![Architecture](img/system_design_diagram.png)
+
+- Nginx (proxy) → FastAPI (backend) → PostgreSQL (database)  
+- Redis hỗ trợ cache và pub/sub notification  
+
+### Sơ đồ khác
+- ERD: `docs/erd.png`    
 
 ---
 
-## **D. Review Criteria**
+## 📖 Swagger UI / API Docs
 
-### **D1. Database & System Design**
-- [ ] Schema with correct relations & constraints.  
-- [ ] Indexes on `users(email)`, `tasks(status, project_id)`.  
-- [ ] ER diagram + system design diagram included.  
+- Swagger UI (qua Nginx Proxy): [http://localhost/docs#/](http://localhost/docs#/)  
+- Swagger UI (trực tiếp FastAPI): [http://localhost:8000/docs#/](http://localhost:8000/docs#/)  
+- ReDoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)  
 
-### **D2. Core Functionality**
-- [ ] JWT auth with role-based permissions.  
-- [ ] CRUD for Projects and Tasks with proper rules.  
-- [ ] Status workflow enforced (`todo → in-progress → done`).  
-- [ ] Comments & file attachments working.  
-- [ ] Notifications created on assign/status/comment.  
-- [ ] Basic reporting endpoints working.  
+Ảnh giao diện Swagger:  
+![Swagger UI](img/swagger.png)  
 
-### **D3. Code Quality**
-- [ ] Centralized error handling & logging.  
-- [ ] Configurable via `.env`.  
+---
 
-### **D4. Testing**
-- [ ] Coverage ≥ 70%.  
+## 📂 Cấu trúc thư mục
 
-### **D5. Deployment**
-- [ ] Nginx configuration.  
-- [ ] Dockerized deployment (Include Nginx)
+```
+.
+├── app/                # Source code FastAPI (routers, services, repositories, schemas, models)
+├── scripts/            # Script setup, seed DB
+├── tests/              # Unit & integration tests
+├── image/              # Ảnh minh họa (docker.png, swagger.png)
+├── docker-compose.yml
+├── Justfile
+└── README.md
+```
 
-### **D6. Documentation**
-- [ ] README with setup guide.  
-- [ ] API documentation (Swagger UI).
+---
+
+## ⚙️ Các lệnh Justfile
+
+```make
+# Install dependencies
+install:
+    pip install -r requirements.txt
+
+# Install development dependencies
+install-dev:
+    pip install -r requirements-dev.txt
+
+# Run the application
+run:
+    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# Run tests
+test:
+    pytest tests/ -v --cov=app --cov-report=term-missing
+
+# Run tests with coverage report
+test-cov:
+    pytest tests/ --cov=app --cov-report=html
+
+# Format code
+format:
+    black app/ tests/
+    isort app/ tests/
+
+# Lint code
+lint:
+    flake8 app/ tests/
+    black --check app/ tests/
+    isort --check-only app/ tests/
+
+# Type checking
+type-check:
+    mypy app/
+
+# Database migrations
+db-migrate:
+    alembic revision --autogenerate -m "{{message}}"
+
+db-upgrade:
+    alembic upgrade head
+
+db-downgrade:
+    alembic downgrade -1
+
+# Seed database
+seed:
+    python scripts/seed.py
+
+# Setup database
+setup-db:
+    python scripts/setup_db.py
+
+# Docker commands
+docker-build:
+    docker build -t task-management-backend .
+
+docker-run:
+    docker-compose up -d
+
+docker-stop:
+    docker-compose down
+
+docker-logs:
+    docker-compose logs -f
+
+docker-db-setup:
+    docker-compose exec web python scripts/setup_db.py
+
+# Docker database seed
+docker-db-seed:
+    docker-compose exec web python scripts/seed.py
+
+# Development setup
+dev-setup: install-dev setup-db seed
+    @echo "Development environment setup complete!"
+
+# Clean up
+clean:
+    find . -type f -name "*.pyc" -delete
+    find . -type d -name "__pycache__" -delete
+    find . -type d -name "*.egg-info" -delete
+    rm -rf .coverage htmlcov/
+
+# Show help
+default:
+    @just --list
+```
+
+---
+
+## 🧪 Kiểm thử
+
+Chạy test:
+
+```bash
+just test
+```
+
+Coverage report:
+
+```bash
+just test-cov
+```
+
+---
+
