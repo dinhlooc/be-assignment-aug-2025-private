@@ -79,7 +79,7 @@ just docker-db-seed
 - Redis hỗ trợ cache và pub/sub notification  
 
 ### Sơ đồ khác
-- ERD: `docs/erd.png`    
+- ERD: `img/ERD.png`    
 
 ---
 
