@@ -79,7 +79,7 @@ just docker-db-seed
 - Redis hỗ trợ cache và pub/sub notification  
 
 ### Sơ đồ khác
-- ERD: `docs/erd.png`    
+![ERD](img/ERD.png)
 
 ---
 
@@ -91,6 +91,10 @@ just docker-db-seed
 
 Ảnh giao diện Swagger:  
 ![Swagger UI](img/swagger.png)  
+![Swagger UI](img/swagger1.png)  
+
+Ảnh giao diện Swagger:  
+![Swagger docs UI](img/redoc.png)  
 
 ---
 
